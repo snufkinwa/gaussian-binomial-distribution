@@ -1,0 +1,40 @@
+name: Publish Python Package to TestPyPI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Generate requirements.txt
+        run: python generate_requirements.py
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest build twine
+      - name: Run tests
+        run: |
+          . venv/bin/activate
+          pytest test/test_script.py
+      - name: Build package
+        run: |
+          . venv/bin/activate
+          python -m build
+      - name: Publish to TestPyPI
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: pypa/gh-action-pypi-publish@v1.8.10
+        with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
