@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 DESCRIPTION = 'Gaussian and Binomial Distribution'
 LONG_DESCRIPTION = '''
 This package provides tools for working with Gaussian and Binomial distributions. 
